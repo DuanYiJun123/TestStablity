@@ -106,7 +106,6 @@ public class App {
 		getFeature();
 
 		// faceAttrbute();
-
 		// feature();
 		//
 		// removeWater();
@@ -122,7 +121,6 @@ public class App {
 		// lipReading();
 		//
 		// liveness();
-
 	}
 
 	private static void getFeature() {
