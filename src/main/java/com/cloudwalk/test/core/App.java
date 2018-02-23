@@ -20,6 +20,7 @@ import com.cloudwalk.test.client.ClientFactory.Client;
 import com.cloudwalk.test.client.FileUtil;
 import com.cloudwalk.test.client.IFace.FaceDetectResult;
 import com.cloudwalk.test.client.IFace.FeatureResult;
+import com.cloudwalk.test.client.IFace.SimilarityByFeatureResult;
 import com.cloudwalk.test.client.ResourcesUtil;
 import com.cloudwalk.test.client.XmlUtil;
 
@@ -104,7 +105,6 @@ public class App {
 		//
 		// groupFaceDemo();
 
-		faceDetect();
 		getFeature();
 
 		// faceAttrbute();
@@ -126,12 +126,30 @@ public class App {
 	}
 
 	private static void getFeature() {
-		String path=get("feature");
-		File file=new File(path);
-		String img = FileUtil
-				.FileToBase64(new File(getBaseDir() + File.separator + "resources" + File.separator + "pic1.jpg"));
-		FeatureResult featureByImg = CLIENT.featureByImg(img);
-		skip(featureByImg);
+		String path = get("feature");
+		String flg = get("compare");
+		File file = new File(path);
+		if (!file.isDirectory()) {
+			try {
+				throw new Exception();
+			} catch (Exception e) {
+				System.out.println("check config.xml");
+				e.printStackTrace();
+			}
+		}
+		File[] listFiles = file.listFiles();
+		for (File f : listFiles) {
+			String img = FileUtil.FileToBase64(f);
+			FeatureResult featureByImg = CLIENT.featureByImg(img);
+			String feature = featureByImg.feature;
+
+			skip(featureByImg, f);
+
+			if (Boolean.valueOf(flg)) {
+				SimilarityByFeatureResult similarityByFeature = CLIENT.similarityByFeature(feature, feature);
+				skip(similarityByFeature, f);
+			}
+		}
 	}
 
 	// private static void liveness() {
@@ -262,14 +280,14 @@ public class App {
 	//
 	// String url =
 	// "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511319821&di=d5a7e5f82bf41baddc46a825a1e55952&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F0e2442a7d933c89554b9f68ddb1373f083020004.jpg";
-	// FeatureResult featureByUrl = CLIENT.featureByUrl(url);
-	// skip(featureByUrl);
+	// FeatureResult featureByImgB = CLIENT.featureByImg(url);
+	// skip(featureByImgB);
 	//
 	// if (featureByImgA.result != null && featureByImgA.result == 0 &&
-	// featureByUrl.result != null
-	// && featureByUrl.result == 0) {
+	// featureByImgB.result != null
+	// && featureByImgB.result == 0) {
 	// String featureA = featureByImgA.feature;
-	// String featureB = featureByUrl.feature;
+	// String featureB = featureByImgB.feature;
 	//
 	// SimilarityByFeatureResult similarityByFeature =
 	// CLIENT.similarityByFeature(featureA, featureB);
@@ -289,23 +307,23 @@ public class App {
 	// skip(attributeByURL);
 	// }
 
-	private static void faceDetect() {
-		String path=get("faceDetect");
-		File file=new File(path);
-		String img = FileUtil
-				.FileToBase64(file);
-		FaceDetectResult detectByUImg = CLIENT.detectByUImg(img, false);
-		skip(detectByUImg);
-		// FaceDetectResult detectByUImg2 = CLIENT.detectByUImg(img, true);
-		// skip(detectByUImg2);
-
-		// String url =
-		// "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511319821&di=d5a7e5f82bf41baddc46a825a1e55952&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F0e2442a7d933c89554b9f68ddb1373f083020004.jpg";
-		// FaceDetectResult detectByUrl = CLIENT.detectByUrl(url, false);
-		// skip(detectByUrl);
-		// FaceDetectResult detectByUrl2 = CLIENT.detectByUrl(url, true);
-		// skip(detectByUrl2);
-	}
+	// private static void faceDetect() {
+	// String path = get("faceDetect");
+	// File file = new File(path);
+	// String img = FileUtil.FileToBase64(file);
+	// FaceDetectResult detectByUImg = CLIENT.detectByUImg(img, false);
+	// skip(detectByUImg);
+	// // FaceDetectResult detectByUImg2 = CLIENT.detectByUImg(img, true);
+	// // skip(detectByUImg2);
+	//
+	// // String url =
+	// //
+	// "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511319821&di=d5a7e5f82bf41baddc46a825a1e55952&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F0e2442a7d933c89554b9f68ddb1373f083020004.jpg";
+	// // FaceDetectResult detectByUrl = CLIENT.detectByUrl(url, false);
+	// // skip(detectByUrl);
+	// // FaceDetectResult detectByUrl2 = CLIENT.detectByUrl(url, true);
+	// // skip(detectByUrl2);
+	// }
 
 	// private static void groupFaceDemo() {
 	// String groupId = "test_group" + atomicLong.incrementAndGet();
@@ -391,7 +409,7 @@ public class App {
 		}
 	}
 
-	private static void skip(Object object) {
+	private static void skip(Object object, File f) {
 		String result = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String format = df.format(new Date());
@@ -400,14 +418,14 @@ public class App {
 			Field field = object.getClass().getField("result");
 			if (field != null) {
 				result = field.get(object).toString();
-				System.out.println("time: "+format+" name " + name + " " + result);
+				System.out.println("time: " + format + " name " + name + " " + result + " picName: " + f.getName());
 				BufferedWriter bw = null;
 				try {
 					if (!tmp.exists()) {
 						FileUtil.createDirAndFileIfNotExits(tmp);
 					}
 					bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp, true)));
-					bw.write("time: "+format+" name " + name + " " + result);
+					bw.write("time: " + format + " name " + name + " " + result + " picName: " + f.getName());
 					bw.newLine();
 					bw.flush();
 				} catch (IOException e) {

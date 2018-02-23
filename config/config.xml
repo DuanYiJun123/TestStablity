@@ -4,6 +4,6 @@
 	<server>http://192.168.10.140:7010</server>
 	<hour>1</hour>
 	<thread-size>16</thread-size>
-	<faceDetect>./resources/pic1.jpg</faceDetect>
-	<feature>./resources/pic1.jpg</feature>
+	<compare>true</compare>
+	<pics>./resources/</pics>
 </config>
