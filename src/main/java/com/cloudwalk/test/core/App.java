@@ -18,7 +18,6 @@ import org.dom4j.Element;
 import com.cloudwalk.test.client.ClientFactory;
 import com.cloudwalk.test.client.ClientFactory.Client;
 import com.cloudwalk.test.client.FileUtil;
-import com.cloudwalk.test.client.IFace.FaceDetectResult;
 import com.cloudwalk.test.client.IFace.FeatureResult;
 import com.cloudwalk.test.client.IFace.SimilarityByFeatureResult;
 import com.cloudwalk.test.client.ResourcesUtil;
@@ -100,7 +99,7 @@ public class App {
 	}
 
 	private static void doStablity() {
-		//System.out.println("------");
+		// System.out.println("------");
 		// groupDemo();
 		//
 		// groupFaceDemo();
@@ -142,12 +141,15 @@ public class App {
 			String img = FileUtil.FileToBase64(f);
 			FeatureResult featureByImg = CLIENT.featureByImg(img);
 			String feature = featureByImg.feature;
+			int re = featureByImg.result;
 
 			skip(featureByImg, f);
 
 			if (Boolean.valueOf(flg)) {
-				SimilarityByFeatureResult similarityByFeature = CLIENT.similarityByFeature(feature, feature);
-				skip(similarityByFeature, f);
+				if (re == 0) {
+					SimilarityByFeatureResult similarityByFeature = CLIENT.similarityByFeature(feature, feature);
+					skip(similarityByFeature, f);
+				}
 			}
 		}
 	}
@@ -418,14 +420,14 @@ public class App {
 			Field field = object.getClass().getField("result");
 			if (field != null) {
 				result = field.get(object).toString();
-				System.out.println("time: " + format + " name " + name + " " + result + " picName: " + f.getName());
+				System.out.println("time: " + format + " name " + name + " picName: " + f.getName() + " " + result);
 				BufferedWriter bw = null;
 				try {
 					if (!tmp.exists()) {
 						FileUtil.createDirAndFileIfNotExits(tmp);
 					}
 					bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp, true)));
-					bw.write("time: " + format + " name " + name + " " + result + " picName: " + f.getName());
+					bw.write("time: " + format + " name " + name + " picName: " + f.getName() + " " + result);
 					bw.newLine();
 					bw.flush();
 				} catch (IOException e) {
