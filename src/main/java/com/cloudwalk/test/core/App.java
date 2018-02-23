@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -391,19 +393,21 @@ public class App {
 
 	private static void skip(Object object) {
 		String result = null;
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String format = df.format(new Date());
 		try {
 			String name = object.getClass().getName();
 			Field field = object.getClass().getField("result");
 			if (field != null) {
 				result = field.get(object).toString();
-				System.out.println("name " + name + " " + result);
+				System.out.println("time: "+format+" name " + name + " " + result);
 				BufferedWriter bw = null;
 				try {
 					if (!tmp.exists()) {
 						FileUtil.createDirAndFileIfNotExits(tmp);
 					}
 					bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tmp, true)));
-					bw.write("name " + name + " " + result);
+					bw.write("time: "+format+" name " + name + " " + result);
 					bw.newLine();
 					bw.flush();
 				} catch (IOException e) {
