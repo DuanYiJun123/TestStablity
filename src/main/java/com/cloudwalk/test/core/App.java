@@ -100,7 +100,7 @@ public class App {
 	}
 
 	private static void doStablity() {
-		System.out.println("------");
+		//System.out.println("------");
 		// groupDemo();
 		//
 		// groupFaceDemo();
@@ -126,7 +126,7 @@ public class App {
 	}
 
 	private static void getFeature() {
-		String path = get("feature");
+		String path = get("pics");
 		String flg = get("compare");
 		File file = new File(path);
 		if (!file.isDirectory()) {
