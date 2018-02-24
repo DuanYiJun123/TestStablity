@@ -130,9 +130,9 @@ public class App {
 		}
 	}
 
-	private static String getBaseDir() {
-		return FileUtil.getAppRoot();
-	}
+//	private static String getBaseDir() {
+//		return FileUtil.getAppRoot();
+//	}
 
 	private static void error(String mapping, String result) {
 		flg = false;

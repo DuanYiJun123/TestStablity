@@ -24,6 +24,7 @@
 				<include>config/*</include>
 				<include>in-file/**</include>
 				<include>resources/**</include>
+				<include>start.sh</include>
 			</includes>
 		</fileSet>
 	</fileSets>
